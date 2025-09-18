@@ -6,12 +6,12 @@ import { SendMessageDto } from '../src/modules/chat/dto/sendMessage.dto';
 import { HttpStatus, BadRequestException } from '@nestjs/common';
 
 describe('ChatController', () => {
-  // Unit tests para ChatController
+  // Unit tests for ChatController
   let controller: ChatController;
   let chatService: ChatService;
   let rateLimitGuard: RateLimitGuard;
 
-  // Objeto mock de respuesta
+  // Mock response object
   const mockResponse = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn().mockReturnThis(),
@@ -50,16 +50,16 @@ describe('ChatController', () => {
   });
 
   describe('sendMessage', () => {
-    it('debería enviar un mensaje exitosamente y retornar respuesta', async () => {
-      // Preparar
+    it('should send a message successfully and return response', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: 'Hello World' };
       const expectedReply = 'Bot: HELLO WORLD';
       jest.spyOn(chatService, 'sendMessage').mockReturnValue(expectedReply);
 
-      // Actuar
+      // Act
       await controller.sendMessage(mockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(chatService.sendMessage).toHaveBeenCalledWith(sendMessageDto);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -69,8 +69,8 @@ describe('ChatController', () => {
       });
     });
 
-    it('debería manejar errores del servicio graciosamente y retornar BAD_REQUEST', async () => {
-      // Preparar
+    it('should handle service errors gracefully and return BAD_REQUEST', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: 'Test message' };
       const error = new Error('Service error');
       jest.spyOn(chatService, 'sendMessage').mockImplementation(() => {
@@ -78,10 +78,10 @@ describe('ChatController', () => {
       });
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-      // Actuar
+      // Act
       await controller.sendMessage(mockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(chatService.sendMessage).toHaveBeenCalledWith(sendMessageDto);
       expect(consoleSpy).toHaveBeenCalledWith(error);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
@@ -94,8 +94,8 @@ describe('ChatController', () => {
       consoleSpy.mockRestore();
     });
 
-    it('debería manejar errores del servicio sin mensaje y retornar error genérico', async () => {
-      // Preparar
+    it('should handle service errors without message and return generic error', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: 'Test message' };
       const error = new Error();
       jest.spyOn(chatService, 'sendMessage').mockImplementation(() => {
@@ -103,10 +103,10 @@ describe('ChatController', () => {
       });
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-      // Actuar
+      // Act
       await controller.sendMessage(mockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(chatService.sendMessage).toHaveBeenCalledWith(sendMessageDto);
       expect(consoleSpy).toHaveBeenCalledWith(error);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
@@ -119,8 +119,8 @@ describe('ChatController', () => {
       consoleSpy.mockRestore();
     });
 
-    it('debería manejar diferentes tipos de mensajes correctamente', async () => {
-      // Preparar
+    it('should handle different types of messages correctly', async () => {
+      // Arrange
       const testCases = [
         { input: 'hello', expected: 'Bot: HELLO' },
         { input: 'Test Message', expected: 'Bot: TEST MESSAGE' },
@@ -132,10 +132,10 @@ describe('ChatController', () => {
         const sendMessageDto: SendMessageDto = { message: testCase.input };
         jest.spyOn(chatService, 'sendMessage').mockReturnValue(testCase.expected);
 
-        // Actuar
+        // Act
         await controller.sendMessage(mockResponse, { message: testCase.input });
 
-        // Verificar
+        // Assert
         expect(chatService.sendMessage).toHaveBeenCalledWith({ message: testCase.input });
         expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
         expect(mockResponse.json).toHaveBeenCalledWith({
@@ -144,23 +144,23 @@ describe('ChatController', () => {
           reason: '',
         });
 
-        // Reiniciar mocks para la siguiente iteración
+        // Reset mocks for next iteration
         jest.clearAllMocks();
         mockResponse.status.mockReturnThis();
         mockResponse.json.mockReturnThis();
       }
     });
 
-    it('debería manejar mensajes solo con espacios en blanco', async () => {
-      // Preparar
+    it('should handle messages with only whitespace', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: '   ' };
       const expectedReply = 'Bot:    ';
       jest.spyOn(chatService, 'sendMessage').mockReturnValue(expectedReply);
 
-      // Actuar
+      // Act
       await controller.sendMessage(mockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(chatService.sendMessage).toHaveBeenCalledWith(sendMessageDto);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -171,26 +171,26 @@ describe('ChatController', () => {
     });
   });
 
-  describe('Integración de Rate Limiting', () => {
-    it('debería verificar que el guard de rate limit está aplicado al endpoint', () => {
-      // Este test verifica que el decorador RateLimitGuard está aplicado correctamente
-      // El comportamiento real del rate limiting se prueba en los tests unitarios del guard
+  describe('Rate Limiting Integration', () => {
+    it('should verify that the rate limit guard is applied to the endpoint', () => {
+      // This test verifies that the RateLimitGuard decorator is applied correctly
+      // The actual rate limiting behavior is tested in the guard unit tests
       const guards = Reflect.getMetadata('__guards__', controller.sendMessage);
       expect(guards).toContain(RateLimitGuard);
     });
   });
 
-  describe('Integración del Objeto Response', () => {
-    it('debería encadenar correctamente los métodos de respuesta', async () => {
-      // Preparar
+  describe('Response Object Integration', () => {
+    it('should chain response methods correctly', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: 'Test' };
       const expectedReply = 'Bot: TEST';
       jest.spyOn(chatService, 'sendMessage').mockReturnValue(expectedReply);
 
-      // Actuar
+      // Act
       await controller.sendMessage(mockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -199,22 +199,22 @@ describe('ChatController', () => {
       });
     });
 
-    it('debería manejar mutaciones del objeto response', async () => {
-      // Preparar
+    it('should handle response object mutations', async () => {
+      // Arrange
       const sendMessageDto: SendMessageDto = { message: 'Test' };
       const expectedReply = 'Bot: TEST';
       jest.spyOn(chatService, 'sendMessage').mockReturnValue(expectedReply);
       
-      // Crear un nuevo objeto response para cada test
+      // Create a new response object for each test
       const newMockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
 
-      // Actuar
+      // Act
       await controller.sendMessage(newMockResponse, sendMessageDto);
 
-      // Verificar
+      // Assert
       expect(newMockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(newMockResponse.json).toHaveBeenCalledWith({
         success: true,

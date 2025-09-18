@@ -5,26 +5,26 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // -----> Configuración de CORS 
-  // Permite configurar orígenes por variables de entorno:
-  // CORS_ORIGINS: lista separada por comas (ej: "http://localhost:3000,https://miapp.com")
-  // FRONTEND_URL: alternativa única (ej: "http://localhost:5173")
+  // -----> CORS Configuration 
+  // Allows configuring origins through environment variables:
+  // CORS_ORIGINS: comma-separated list (e.g. "http://localhost:3000,https://miapp.com")
+  // FRONTEND_URL: single alternative (e.g. "http://localhost:5173")
   const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS ?? process.env.FRONTEND_URL ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
 
   app.enableCors({
-    // Si hay orígenes configurados, se usan; si no, reflejar origen (true) para evitar bloqueos durante desarrollo
+    // If origins are configured, use them; otherwise, reflect origin (true) to avoid blocks during development
     origin: ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS : true,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Content-Disposition'],
     optionsSuccessStatus: 204,
   });
 
-  // -----> Configuración de validación global
+  // -----> Global validation configuration
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

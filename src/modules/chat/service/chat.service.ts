@@ -4,7 +4,7 @@ import { SendMessageDto } from '../dto/sendMessage.dto';
 @Injectable()
 export class ChatService {
   sendMessage(body:SendMessageDto):string {
-    // Simula una respuesta del bot convirtiendo el mensaje a mayúsculas
+    // Simulates a bot response by converting the message to uppercase
     return `Bot: ${body.message.toUpperCase()}`;
   }
 }

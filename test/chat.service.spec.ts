@@ -4,7 +4,7 @@ import { SendMessageDto } from '../src/modules/chat/dto/sendMessage.dto';
 
 describe('ChatService', () => {
 
-  // Unit tests para ChatService
+  // Unit tests for ChatService
   let service: ChatService;
 
   beforeEach(async () => {
@@ -20,87 +20,87 @@ describe('ChatService', () => {
   });
 
   describe('sendMessage', () => {
-    it('debería retornar mensaje en mayúsculas con prefijo Bot', () => {
+    it('should return message in uppercase with Bot prefix', () => {
       const sendMessageDto: SendMessageDto = { message: 'hello world' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO WORLD');
     });
 
-    it('debería manejar mensaje de cadena vacía', () => {
+    it('should handle empty string message', () => {
       const sendMessageDto: SendMessageDto = { message: '' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: ');
     });
 
-    it('debería manejar mensaje de un solo carácter', () => {
+    it('should handle single character message', () => {
       const sendMessageDto: SendMessageDto = { message: 'a' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: A');
     });
 
-    it('debería manejar números en el mensaje', () => {
+    it('should handle numbers in the message', () => {
       const sendMessageDto: SendMessageDto = { message: '123' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: 123');
     });
 
-    it('debería manejar caracteres especiales en el mensaje', () => {
+    it('should handle special characters in the message', () => {
       const sendMessageDto: SendMessageDto = { message: 'hello!@#$%^&*()' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO!@#$%^&*()');
     });
 
-    it('debería manejar mensaje ya en mayúsculas', () => {
+    it('should handle message already in uppercase', () => {
       const sendMessageDto: SendMessageDto = { message: 'HELLO WORLD' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO WORLD');
     });
 
-    it('debería manejar mensaje con mayúsculas y minúsculas mixtas', () => {
+    it('should handle message with mixed uppercase and lowercase', () => {
       const sendMessageDto: SendMessageDto = { message: 'HeLLo WoRLd' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO WORLD');
     });
 
-    it('debería manejar mensaje con espacios', () => {
+    it('should handle message with spaces', () => {
       const sendMessageDto: SendMessageDto = { message: '  hello world  ' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot:   HELLO WORLD  ');
     });
 
-    it('debería manejar mensaje con saltos de línea', () => {
+    it('should handle message with line breaks', () => {
       const sendMessageDto: SendMessageDto = { message: 'hello\nworld' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO\nWORLD');
     });
 
-    it('debería manejar mensaje con tabulaciones', () => {
+    it('should handle message with tabs', () => {
       const sendMessageDto: SendMessageDto = { message: 'hello\tworld' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO\tWORLD');
     });
 
-    it('debería manejar caracteres unicode', () => {
+    it('should handle unicode characters', () => {
       const sendMessageDto: SendMessageDto = { message: 'hello ñoño' };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe('Bot: HELLO ÑOÑO');
     });
 
-    it('debería manejar mensaje muy largo', () => {
+    it('should handle very long message', () => {
       const longMessage = 'a'.repeat(1000);
       const sendMessageDto: SendMessageDto = { message: longMessage };
       const result = service.sendMessage(sendMessageDto);
       expect(result).toBe(`Bot: ${longMessage.toUpperCase()}`);
     });
 
-    it('debería ser una función pura (sin efectos secundarios)', () => {
+    it('should be a pure function (no side effects)', () => {
       const sendMessageDto: SendMessageDto = { message: 'test' };
       const originalMessage = sendMessageDto.message;
       service.sendMessage(sendMessageDto);
       expect(sendMessageDto.message).toBe(originalMessage);
     });
 
-    it('debería retornar tipo string', () => {
+    it('should return string type', () => {
       const sendMessageDto: SendMessageDto = { message: 'test' };
       const result = service.sendMessage(sendMessageDto);
       expect(typeof result).toBe('string');

@@ -5,7 +5,7 @@ const LIMIT = 5;
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
-  // Guard para limitar la cantidad de requests por IP
+  // Guard to limit the number of requests per IP
   private hits = new Map<string, number[]>();
 
   canActivate(context: ExecutionContext): boolean {
@@ -20,7 +20,7 @@ export class RateLimitGuard implements CanActivate {
     this.hits.set(ip, times);
 
     if (times.length > LIMIT) {
-      throw new BadRequestException('Limite excedido, intente mas tarde');
+      throw new BadRequestException('Rate limit exceeded, please try again later');
     }
     return true;
     }

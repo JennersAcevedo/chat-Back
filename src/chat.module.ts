@@ -3,7 +3,7 @@ import { ChatController } from './modules/chat/controller/chat.controller';
 import { ChatService } from './modules/chat/service/chat.service';
 
 @Module({
-  controllers: [ChatController], // Se importa el controlador de chat
-  providers: [ChatService], // Se importa el servicio de chat
+  controllers: [ChatController], // Import the chat controller
+  providers: [ChatService], // Import the chat service
 })
 export class ChatModule {}

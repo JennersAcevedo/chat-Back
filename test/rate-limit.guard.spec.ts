@@ -3,7 +3,7 @@ import { ExecutionContext, BadRequestException } from '@nestjs/common';
 import { RateLimitGuard } from '../src/shared/guards/rate-limit.guard';
 
 describe('RateLimitGuard', () => {
-  // Unit tests para RateLimitGuard
+  // Unit tests for RateLimitGuard
   let guard: RateLimitGuard;
   let mockExecutionContext: ExecutionContext;
 
@@ -14,7 +14,7 @@ describe('RateLimitGuard', () => {
 
     guard = module.get<RateLimitGuard>(RateLimitGuard);
     
-    // Reiniciar el mapa de hits antes de cada test
+    // Reset the hits map before each test
     (guard as any).hits = new Map();
   });
 
@@ -36,39 +36,39 @@ describe('RateLimitGuard', () => {
       } as any;
     });
 
-    it('debería permitir request cuando está bajo el límite de rate', () => {
-      // Actuar
+    it('should allow request when under rate limit', () => {
+      // Act
       const result = guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       expect(result).toBe(true);
     });
 
-    it('debería permitir múltiples requests bajo el límite', () => {
-      // Actuar y Verificar
+    it('should allow multiple requests under the limit', () => {
+      // Act and Assert
       for (let i = 0; i < 5; i++) {
         const result = guard.canActivate(mockExecutionContext);
         expect(result).toBe(true);
       }
     });
 
-    it('debería lanzar BadRequestException cuando se excede el límite de rate', () => {
-      // Preparar - Hacer 5 requests primero (el límite)
+    it('should throw BadRequestException when rate limit is exceeded', () => {
+      // Arrange - Make 5 requests first (the limit)
       for (let i = 0; i < 5; i++) {
         guard.canActivate(mockExecutionContext);
       }
 
-      // Actuar y Verificar
+      // Act and Assert
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
         BadRequestException
       );
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
-        'Limite excedido, intente mas tarde'
+        'Rate limit exceeded, please try again later'
       );
     });
 
-    it('debería usar dirección IP de request.ip cuando esté disponible', () => {
-      // Preparar
+    it('should use request.ip address when available', () => {
+      // Arrange
       const mockRequest = {
         ip: '10.0.0.1',
         socket: {
@@ -81,17 +81,17 @@ describe('RateLimitGuard', () => {
         }),
       } as any;
 
-      // Actuar
+      // Act
       guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       const hits = (guard as any).hits;
       expect(hits.has('10.0.0.1')).toBe(true);
       expect(hits.has('192.168.1.1')).toBe(false);
     });
 
-    it('debería usar socket.remoteAddress cuando request.ip no esté disponible', () => {
-      // Preparar
+    it('should use socket.remoteAddress when request.ip is not available', () => {
+      // Arrange
       const mockRequest = {
         socket: {
           remoteAddress: '192.168.1.100',
@@ -103,16 +103,16 @@ describe('RateLimitGuard', () => {
         }),
       } as any;
 
-      // Actuar
+      // Act
       guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       const hits = (guard as any).hits;
       expect(hits.has('192.168.1.100')).toBe(true);
     });
 
-    it('debería usar "unknown" cuando ni IP ni dirección socket estén disponibles', () => {
-      // Preparar
+    it('should use "unknown" when neither IP nor socket address are available', () => {
+      // Arrange
       const mockRequest = {};
       mockExecutionContext = {
         switchToHttp: jest.fn().mockReturnValue({
@@ -120,16 +120,16 @@ describe('RateLimitGuard', () => {
         }),
       } as any;
 
-      // Actuar
+      // Act
       guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       const hits = (guard as any).hits;
       expect(hits.has('unknown')).toBe(true);
     });
 
-    it('debería rastrear diferentes IPs por separado', () => {
-      // Preparar
+    it('should track different IPs separately', () => {
+      // Arrange
       const ip1 = '192.168.1.1';
       const ip2 = '192.168.1.2';
       
@@ -145,108 +145,108 @@ describe('RateLimitGuard', () => {
         }),
       } as any;
 
-      // Actuar - Hacer 5 requests desde IP1 (debería estar bien)
+      // Act - Make 5 requests from IP1 (should be fine)
       for (let i = 0; i < 5; i++) {
         expect(guard.canActivate(mockExecutionContext1)).toBe(true);
       }
 
-      // Hacer 5 requests desde IP2 (también debería estar bien)
+      // Make 5 requests from IP2 (should also be fine)
       for (let i = 0; i < 5; i++) {
         expect(guard.canActivate(mockExecutionContext2)).toBe(true);
       }
 
-      // Verificar - Ambas IPs deberían ser rastreadas por separado
+      // Assert - Both IPs should be tracked separately
       const hits = (guard as any).hits;
       expect(hits.get(ip1)).toHaveLength(5);
       expect(hits.get(ip2)).toHaveLength(5);
     });
 
-    it('debería limpiar timestamps antiguos fuera de la ventana', () => {
-      // Preparar
+    it('should clean old timestamps outside the window', () => {
+      // Arrange
       const now = Date.now();
-      const oldTimestamp = now - 70000; // hace 70 segundos (fuera de ventana de 60s)
-      const recentTimestamp = now - 30000; // hace 30 segundos (dentro de ventana de 60s)
+      const oldTimestamp = now - 70000; // 70 seconds ago (outside 60s window)
+      const recentTimestamp = now - 30000; // 30 seconds ago (within 60s window)
 
-      // Agregar manualmente timestamps antiguos al mapa de hits
+      // Manually add old timestamps to the hits map
       const hits = (guard as any).hits;
       hits.set('192.168.1.1', [oldTimestamp, recentTimestamp]);
 
-      // Mockear Date.now para retornar tiempo actual
+      // Mock Date.now to return current time
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      // Actuar
+      // Act
       guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       const ipHits = hits.get('192.168.1.1');
-      expect(ipHits).toHaveLength(2); // Solo timestamp reciente + nuevo
+      expect(ipHits).toHaveLength(2); // Only recent timestamp + new
       expect(ipHits).not.toContain(oldTimestamp);
       expect(ipHits).toContain(recentTimestamp);
 
-      // Restaurar Date.now
+      // Restore Date.now
       jest.restoreAllMocks();
     });
 
-    it('debería permitir requests nuevamente después de que expire la ventana', () => {
-      // Preparar
+    it('should allow requests again after window expires', () => {
+      // Arrange
       const now = Date.now();
-      const oldTimestamp = now - 70000; // hace 70 segundos
+      const oldTimestamp = now - 70000; // 70 seconds ago
 
-      // Agregar manualmente timestamps antiguos al mapa de hits
+      // Manually add old timestamps to the hits map
       const hits = (guard as any).hits;
       hits.set('192.168.1.1', [oldTimestamp]);
 
-      // Mockear Date.now para retornar tiempo actual
+      // Mock Date.now to return current time
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      // Actuar - Debería ser permitido porque timestamp antiguo está fuera de ventana
+      // Act - Should be allowed because old timestamp is outside window
       const result = guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       expect(result).toBe(true);
 
-      // Restaurar Date.now
+      // Restore Date.now
       jest.restoreAllMocks();
     });
 
-    it('debería manejar requests concurrentes correctamente', async () => {
-      // Preparar
+    it('should handle concurrent requests correctly', async () => {
+      // Arrange
       const promises: Promise<boolean>[] = [];
 
-      // Actuar - Hacer 5 requests concurrentes
+      // Act - Make 5 concurrent requests
       for (let i = 0; i < 5; i++) {
         promises.push(Promise.resolve(guard.canActivate(mockExecutionContext)));
       }
 
-      // Verificar - Todos deberían ser permitidos
+      // Assert - All should be allowed
       const results = await Promise.all(promises);
       results.forEach(result => {
         expect(result).toBe(true);
       });
     });
 
-    it('debería mantener conteo correcto después de limpieza', () => {
-      // Preparar
+    it('should maintain correct count after cleanup', () => {
+      // Arrange
       const now = Date.now();
-      const oldTimestamp = now - 70000; // hace 70 segundos
-      const recentTimestamp = now - 30000; // hace 30 segundos
+      const oldTimestamp = now - 70000; // 70 seconds ago
+      const recentTimestamp = now - 30000; // 30 seconds ago
 
-      // Agregar manualmente timestamps mixtos
+      // Manually add mixed timestamps
       const hits = (guard as any).hits;
       hits.set('192.168.1.1', [oldTimestamp, recentTimestamp, recentTimestamp]);
 
-      // Mockear Date.now
+      // Mock Date.now
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      // Actuar
+      // Act
       guard.canActivate(mockExecutionContext);
 
-      // Verificar
+      // Assert
       const ipHits = hits.get('192.168.1.1');
-      expect(ipHits).toHaveLength(3); // 2 recientes + 1 nuevo
+      expect(ipHits).toHaveLength(3); // 2 recent + 1 new
       expect(ipHits.filter(t => t === oldTimestamp)).toHaveLength(0);
 
-      // Restaurar Date.now
+      // Restore Date.now
       jest.restoreAllMocks();
     });
   });
