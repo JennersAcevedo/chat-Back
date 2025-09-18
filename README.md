@@ -8,7 +8,7 @@
 
 ## Description
 
-This is the Take Home Assignment that integrate a LLM (Gemini AI) on the .env file you have the credentials to test it.
+This is the Take-Home Assignment, which integrates an LLM (Gemini AI). The .env file contains the credentials needed for testing.
 
 ## Project setup
 

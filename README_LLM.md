@@ -55,14 +55,14 @@ npm test
 
 Send a message to the chatbot specialized in Argentine gastronomy.
 
-**Request:**
+### Request
 ```json
 {
   "message": "How do you make an Argentine asado?"
 }
 ```
 
-**Response (Success):**
+### Response (Success):**
 ```json
 {
   "success": true,
@@ -71,7 +71,7 @@ Send a message to the chatbot specialized in Argentine gastronomy.
 }
 ```
 
-**Response (Error):**
+### Response (Error):**
 ```json
 {
   "success": false,
@@ -88,7 +88,7 @@ Send a message to the chatbot specialized in Argentine gastronomy.
 - "What do you need to make a locrio?"
 - "Can you tell me more about asopao?"
 
-### Valid Responses:**
+### Valid Responses:
 - ¡Claro que sí! Mangu is the quintessential Dominican breakfast, and it's surprisingly simple to make. Here's a breakdown of how to make a delicious, authentic Dominican Mangu:
 
 **Ingredients:**
