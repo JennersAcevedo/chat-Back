@@ -7,19 +7,19 @@ import { RateLimitGuard } from '../../../shared/guards/rate-limit.guard';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @UseGuards(RateLimitGuard) // Guard para limitar 
+  @UseGuards(RateLimitGuard) // Guard to limit requests
   @Post('/chat')
  async sendMessage(@Res()response, @Body() body:SendMessageDto) {
     try {
-      //Se llama al servicio para enviar el mensaje y obtener la respuesta del bot
+      // Call the service to send the message and get the bot's response
             let reply = await this.chatService.sendMessage(body);
-            //En la respuesta de el servicio se retorna un success true para poder validar mas facil en el frontend
+            // Return success true in the service response for easier frontend validation
             return response
                 .status(HttpStatus.OK)
                 .json({ success: true, reply, reason: "" });
         } catch (error: any) {
             console.log(error);
-            // En caso de error, retornar un estado 400 con el mensaje de error y en la consola se muestra el error
+            // In case of error, return 400 status with error message and log the error to console
             return response
                 .status(HttpStatus.BAD_REQUEST)
                 .json({ success: false, reply: "", reason: error.message || "Error" });
