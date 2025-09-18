@@ -8,7 +8,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is the Take Home Assignment that integrate a LLM (Gemini AI) on the .env file you have the credentials to test it.
 
 ## Project setup
 
