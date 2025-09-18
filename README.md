@@ -8,7 +8,7 @@
 
 ## Description
 
-This is the Take-Home Assignment, which integrates an LLM (Gemini AI). The .env file contains the credentials needed for testing.
+This is the Live-Coding Assignment, an API designed to be integrated into a tiny chat application.
 
 ## Project setup
 
