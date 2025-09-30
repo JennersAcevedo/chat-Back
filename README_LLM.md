@@ -22,7 +22,7 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 FRONTEND_URL=http://localhost:5173
 
 # Google Gemini configuration
-LLM_API_KEY = 'AIzaSyCOxLmX0_yAolMzX6QA1c1Cl8NerGKIgRw'
+LLM_API_KEY = ''
 LLM_MODEL = 'gemini-2.0-flash'
 ```
 
